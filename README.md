@@ -2,7 +2,7 @@
 Implementation of the Darcy Flow Formulation through a Unit Square in FEniCS (using pressure boundary conditions)
 
 # Version
-The code was developed using Fenics version 2018.1.0
+The code was developed using FEniCS version 2018.1.0
 
 Paraview v5.4.1 was used in the visualization of plotted results
 
