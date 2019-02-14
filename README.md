@@ -1,5 +1,5 @@
 # Darcy_Flow
-Implementation of the Darcy Flow Formulation through a Unit Square in Fenics (using pressure boundary conditions)
+Implementation of the Darcy Flow Formulation through a Unit Square in FEniCS (using pressure boundary conditions)
 
 # Version
 The code was developed using Fenics version 2018.1.0
