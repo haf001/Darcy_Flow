@@ -1,5 +1,4 @@
 from fenics import *
-from dolfin import *
 import numpy as np
 from ufl import nabla_div
 import sympy as sym
