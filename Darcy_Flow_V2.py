@@ -29,7 +29,7 @@ def solver(f, p_e, mesh, degree=1):
 
     bcs = [bc_L, bc_R]
 
-    # If p = p_e on the boundary, then:-
+    # If p = p_e on the boundary, then use:-
     #def boundary(x, on_boundary):
         #return on_boundary
 
@@ -55,19 +55,17 @@ def solver(f, p_e, mesh, degree=1):
 def run_solver():
     "Run solver to compute and post-process solution"
 
-    mesh = UnitSquareMesh(50, 50)
+    mesh = UnitSquareMesh(40, 40)
 
     # Setting up problem parameters and calling solver
-    x, y = sym.symbols('x[0], x[1]')
     d = 2
     I = Identity(d)
-    x, y = SpatialCoordinate(mesh)
     M = Expression('fmax(0.10, exp(-pow(10.0*x[1]-1.0*sin(10.0*x[0])-5.0, 2)))', degree=2, domain=mesh)
     K = M*I
     p_e = Expression('1 - x[0]*x[0]', degree=2)
-    #p_e = Expression('sin(x[0])*sin(x[1])', degree=2)
-    f1 = as_vector((-2*x, Constant(0.0)))
-    #f1 = as_vector((cos(x)*sin(y), sin(x)*cos(y)))
+    #p_e = Expression('sin(x[0])*sin(x[1])', degree=2) # Another possible choice of p_e to be used with p = p_e on the boundary as BC
+    f1 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
+    #f1 = as_vector((cos(x)*sin(y), sin(x)*cos(y))) # Use of Expression preferred here instead of as_vector
     f = nabla_div(dot(-K, f1))
     p = solver(f, p_e, mesh, 1)
     u_bar = -K*grad(p)
@@ -96,14 +94,12 @@ def test_solver():
         mesh = UnitSquareMesh(m, m)
         V = FunctionSpace(mesh, 'P', 1)
         p_e_f = interpolate(p_e, FunctionSpace(mesh, 'P', 2))
-        x, y = sym.symbols('x[0], x[1]')
         d = 2
         I = Identity(d)
-        x, y = SpatialCoordinate(mesh)
         M = Expression('fmax(0.10, exp(-pow(10.0*x[1]-1.0*sin(10.0*x[0])-5.0, 2)))', degree=2, domain=mesh)
         K = M*I
-        f1 = as_vector((-2*x, Constant(0.0)))
-        #f1 = as_vector((cos(x)*sin(y), sin(x)*cos(y)))
+        f1 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
+        #f1 = as_vector((cos(x)*sin(y), sin(x)*cos(y))) # Use of Expression preferred here instead of as_vector
         f = nabla_div(dot(-K, f1))
 
         # Compute solution
