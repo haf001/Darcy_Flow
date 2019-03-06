@@ -40,7 +40,6 @@ def solver(f, p_e, mesh, degree=1):
     v = TestFunction(V)
     d = 2
     I = Identity(d)
-    x, y = SpatialCoordinate(mesh)
     M = Expression('fmax(0.10, exp(-pow(10.0*x[1]-1.0*sin(10.0*x[0])-5.0, 2)))', degree=2, domain=mesh)
     K = M*I
     a = dot(K*grad(p), grad(v))*dx
@@ -90,7 +89,7 @@ def test_solver():
     # Iterating over mesh sizes and DOF
     E = []
     DOF = []
-    for m in range (10, 300, 10):
+    for m in range (10, 350, 10):
         mesh = UnitSquareMesh(m, m)
         V = FunctionSpace(mesh, 'P', 1)
         p_e_f = interpolate(p_e, FunctionSpace(mesh, 'P', 2))
