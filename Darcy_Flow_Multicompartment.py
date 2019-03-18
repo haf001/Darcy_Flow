@@ -74,9 +74,14 @@ def run_solver():
     b_23_val = 0.03
     b_12 = Constant(b_12_val)
     b_23 = Constant(b_23_val)
-    p_1 = Expression('sin(2*pi*x[0])*sin(2*pi*x[1])', degree=2)
-    p_2 = Expression('1 - x[0]*x[0]', degree=2)
-    p_3 = Expression('x[0]', degree=1)
+    
+    p_a = Expression('1 - x[0]*x[0]', degree=2)
+    p_b = Expression('1 - x[0]*x[0]', degree=2)
+    p_c = Expression('1 - x[0]*x[0]', degree=2)
+    
+    p_1 = interpolate(p_a, FunctionSpace(mesh, 'P', 2))
+    p_2 = interpolate(p_b, FunctionSpace(mesh, 'P', 2))
+    p_3 = interpolate(p_c, FunctionSpace(mesh, 'P', 2))
 
     f_1 = Expression(('2*pi*cos(2*pi*x[0])*sin(2*pi*x[1])', 'sin(2*pi*x[0])*2*pi*cos(2*pi*x[1])'), degree=2, domain=mesh)
     f_2 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
