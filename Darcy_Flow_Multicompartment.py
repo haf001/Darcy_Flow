@@ -18,20 +18,20 @@ def solver(f, b_12_val, b_23_val, mesh, degree=2):
     Welm = MixedElement([Velm, Velm, Velm])
     W = FunctionSpace(mesh, Welm)
 
-    # Defining Boundary Conditions
-    p_L = Constant(1.0)
+    # Defining Pressure Boundary Conditions
+    inflow = Constant(1.0)
 
     def boundary_L(x, on_boundary):
         return on_boundary and near(x[0], 0)
 
-    bc_L = DirichletBC(W.sub(0), p_L, boundary_L)
+    bc_L = DirichletBC(W.sub(0), inflow, boundary_L)
 
-    p_R = Constant(0.0)
+    outflow = Constant(0.0)
 
     def boundary_R(x, on_boundary):
         return on_boundary and near(x[0], 1)
 
-    bc_R = DirichletBC(W.sub(2), p_R, boundary_R)
+    bc_R = DirichletBC(W.sub(2), outflow, boundary_R)
 
     # Collecting boundary conditions
     bcs = [bc_L, bc_R]
@@ -49,7 +49,7 @@ def solver(f, b_12_val, b_23_val, mesh, degree=2):
     K_3 = M*I
     b_12 = Constant(b_12_val)
     b_23 = Constant(b_23_val)
-    a = dot(K_1*grad(p_1), grad(v_1))*dx + dot(K_2*grad(p_2), grad(v_2))*dx + dot(K_3*grad(p_3), grad(v_3))*dx + (b_12*v_1*(p_1 - p_2))*dx + (b_23*v_2*(p_2 - p_3))*dx
+    a = inner(K_1*grad(p_1), grad(v_1))*dx + inner(K_2*grad(p_2), grad(v_2))*dx + inner(K_3*grad(p_3), grad(v_3))*dx + inner(b_12*(p_1 - p_2), v_1)*dx + inner(b_23*(p_2 - p_3), v_2)*dx
     L = inner(f_1, v_1)*dx + inner(f_2, v_2)*dx + inner(f_3, v_3)*dx
 
     # Computing Numerical Pressure
@@ -74,15 +74,13 @@ def run_solver():
     b_23_val = 0.03
     b_12 = Constant(b_12_val)
     b_23 = Constant(b_23_val)
-    p_1 = Expression('1 - x[0]*x[0]', degree=2)
+    p_1 = Expression('sin(2*pi*x[0])*sin(2*pi*x[1])', degree=2)
     p_2 = Expression('1 - x[0]*x[0]', degree=2)
-    p_3 = Expression('1 - x[0]*x[0]', degree=2)
+    p_3 = Expression('x[0]', degree=1)
 
-    f_1 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
+    f_1 = Expression(('2*pi*cos(2*pi*x[0])*sin(2*pi*x[1])', 'sin(2*pi*x[0])*2*pi*cos(2*pi*x[1])'), degree=2, domain=mesh)
     f_2 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
-    f_3 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
-    #f_2 = Expression(('cos(x[0])*sin(x[1])', 'sin(x[0])*cos(x[1])'), degree=2, domain=mesh)
-    #f_3 = Expression(('cos(x[0])*sin(x[1])', 'sin(x[0])*cos(x[1])'), degree=2, domain=mesh)
+    f_3 = Expression(('1', '0.0'), degree=1, domain=mesh)
 
     f1 = -nabla_div(dot(K_1, f_1)) + b_12*(p_1 - p_2)
     f2 = -nabla_div(dot(K_2, f_2)) + b_23*(p_2 - p_3)
