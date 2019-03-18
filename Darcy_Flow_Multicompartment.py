@@ -83,9 +83,9 @@ def run_solver():
     p_2 = interpolate(p_b, FunctionSpace(mesh, 'P', 2))
     p_3 = interpolate(p_c, FunctionSpace(mesh, 'P', 2))
 
-    f_1 = Expression(('2*pi*cos(2*pi*x[0])*sin(2*pi*x[1])', 'sin(2*pi*x[0])*2*pi*cos(2*pi*x[1])'), degree=2, domain=mesh)
+    f_1 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
     f_2 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
-    f_3 = Expression(('1', '0.0'), degree=1, domain=mesh)
+    f_3 = Expression(('-2*x[0]', '0.0'), degree=1, domain=mesh)
 
     f1 = -nabla_div(dot(K_1, f_1)) + b_12*(p_1 - p_2)
     f2 = -nabla_div(dot(K_2, f_2)) + b_23*(p_2 - p_3)
