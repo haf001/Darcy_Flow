@@ -25,7 +25,7 @@ def solver(f, b_12_val, b_23_val, mesh, degree=2):
 
     bc_L = DirichletBC(W.sub(0), inflow, boundary_L)
 
-    outflow = Constant(0.0)
+    outflow = Constant(0.5)
 
     def boundary_R(x, on_boundary):
         return on_boundary and near(x[0], 1)
@@ -45,8 +45,11 @@ def solver(f, b_12_val, b_23_val, mesh, degree=2):
     K_1 = M*I
     K_2 = M*I
     K_3 = M*I
+
     b_12 = Constant(b_12_val)
     b_23 = Constant(b_23_val)
+
+    # Variational Equation
     a = inner(K_1*grad(p_1), grad(v_1))*dx + inner(K_2*grad(p_2), grad(v_2))*dx + inner(K_3*grad(p_3), grad(v_3))*dx + inner(b_12*(p_1 - p_2), v_1)*dx - inner(b_12*(p_1 - p_2), v_2)*dx + inner(b_23*(p_2 - p_3), v_2)*dx
     - inner(b_23*(p_2 - p_3), v_3)*dx
 
@@ -62,19 +65,20 @@ def run_solver():
     "Run solver to compute and post-process solution"
 
     mesh = UnitSquareMesh(50, 50)
-    Velm = FiniteElement('P', mesh.ufl_cell(), degree=1)
+    Velm = FiniteElement('P', mesh.ufl_cell(), degree=2)
     Welm = MixedElement([Velm, Velm, Velm])
     W = FunctionSpace(mesh, Welm)
 
-    # Setting up problem parameters and calling solver
+    # Setting up problem specific parameters and calling solver
     d = 2
     I = Identity(d)
     M = Expression('fmax(0.10, exp(-pow(10.0*x[1]-1.0*sin(10.0*x[0])-5.0, 2)))', degree=2, domain=mesh)
     K_1 = M*I
     K_2 = M*I
     K_3 = M*I
-    b_12_val = 0.02
-    b_23_val = 0.03
+
+    b_12_val = 0.5
+    b_23_val = 0.5
     b_12 = Constant(b_12_val)
     b_23 = Constant(b_23_val)
 
